@@ -1,0 +1,20 @@
+{
+        "vm_name": "{{ user `os_family` | lower }}_{{user `os_release`}}_{{user `deployment_flavor`}}_v{{user `deployment_release`}}",
+        "vm_description": "{{user `os_family`}} {{user `os_release`}} - {{user `deployment_flavor`}} \n  creation date: {{isotime \"2006-01-02\"}} \n version: {{user `deployment_release`}} ",
+        "vm_cpu": "2",
+        "vm_ram": "4096",
+        "vm_template": "false",
+        "vm_disk_controller": "pvscsi",
+        "vm_disk_size": "20480",
+        "vm_disk_thin": "true",
+        "headless": "true",
+        "vcenter_hostname": "<< YOUR VCENTER FQDN OR IP >>",
+        "vcenter_username": "<< YOUR VCENTER USERNAME >>",
+        "vcenter_password": "<< YOUR VCENTER PASSWORD >>",
+        "vcenter_datacenter": "<< THE DATACENTER WHERE YOU WANT TO DEPLOY >>",
+        "vcenter_cluster": "<< THE CLUSTER ON WHICH YOU WANT TO DEPLOY >>",
+        "vcenter_datastore": "<< THE DATASTORE WHERE THE TEMPLATE SHOULD RESIDE >>",
+        "vcenter_network": "<< THE PORTGROUP TO WHICH THE TEMPLATE WILL CONNECT >>",
+        "ssh_user": "<< YOUR USER INSIDE THE TEMPLATE >>",
+        "ssh_pwd": "<< YOUR PASSWORD INSIDE THE TEMPLATE >>"
+}

@@ -1,0 +1,36 @@
+resources:
+  - name: packer-files
+    type: git
+    icon: github-circle
+    source:
+      uri: << YOUR GITHUB REPOSITORY WITH SSH ACCESS, e.g. git@github.com:username/repository.git >>
+      branch: master
+      private_key: ((github_private_key))
+
+jobs:
+  - name: build-ubuntu-180403-docker
+    plan:
+      - get: packer-files
+      - task: create-image-with-packer
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: dzorgnotti/packer-jetbrains-vsphere
+              tag: latest
+              username: ((docker_hub_user))
+              password: ((docker_hub_password))
+          inputs:
+            - name: packer-files
+          outputs:
+            - name: packer-build-manifest
+              path: /output/packer-manifest
+          run:
+            path: /bin/sh
+            dir: packer-files/packer
+            args:
+              - -exc
+              - |
+                mkdir -p /output/packer-manifest
+                packer build -force -timestamp-ui -var-file=common/common-vars.json ubuntu-180403-docker.json

@@ -1,0 +1,10 @@
+github_private_key: |
+  -----BEGIN OPENSSH PRIVATE KEY-----
+  << ADD YOUR GITHUB MACHINE USER KEY HERE >>
+  -----END OPENSSH PRIVATE KEY-----
+docker_hub_user: << YOUR DOCKER HUB USER NAME >>
+docker_hub_password: << YOUR DOCKER HUB PASSWORD IN CLEARTEXT >>
+vcenter_host: << YOUR VCENTER FQDN OR IP >>
+vcenter_user: << YOUR VCENTER USERNAME >>
+vcenter_password: << YOUR VCENTER PASSWORD >>
+vcenter_datacenter: << THE TARGET DATACENTER FOR THE TEMPLATE >>

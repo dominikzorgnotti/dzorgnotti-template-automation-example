@@ -1,0 +1,99 @@
+{
+    "variables": {
+        "os_type": "Linux",
+        "os_family": "Ubuntu",
+        "os_release": "18.04.03",
+        "deployment_flavor": "docker",
+        "deployment_release": "1.0",
+        "vm_nic_type": "vmxnet3"
+    },
+    "builders": [{
+        "type": "vsphere-iso",
+        "vm_name": "{{user `vm_name`}}",
+        "notes": "{{user `vm_description`}}",
+        "CPUs": "{{user `vm_cpu`}}",
+        "RAM": "{{user `vm_ram`}}",
+        "vcenter_server": "{{user `vcenter_hostname`}}",
+        "username": "{{user `vcenter_username`}}",
+        "password": "{{user `vcenter_password`}}",
+        "insecure_connection": "true",
+        "datacenter": "{{user `vcenter_datacenter`}}",
+        "cluster": "{{user `vcenter_cluster`}}",
+        "datastore": "{{user `vcenter_datastore`}}",
+        "network": "{{user `vcenter_network`}}",
+        "guest_os_type": "ubuntu64Guest",
+        "ssh_username": "{{user `ssh_user`}}",
+        "ssh_password": "{{user `ssh_pwd`}}",
+        "convert_to_template": "{{user `vm_template`}}",
+        "disk_controller_type": "{{user `vm_disk_controller`}}",
+        "disk_size": "{{user `vm_disk_size`}}",
+        "disk_thin_provisioned": "{{user `vm_disk_thin`}}",
+        "network_card": "{{user `vm_nic_type`}}",
+        "iso_paths": [
+            "[<< YOUR VSPHERE DATASTORE WHERE THE TEMPLATE IS, e.g. Datastore1 >>] ISO/ubuntu-18.04.3-server-amd64.iso"
+        ],
+        "iso_checksum": "cb7cd5a0c94899a04a536441c8b6d2bf",
+        "iso_checksum_type": "md5",
+        "floppy_files": [
+            "{{template_dir}}/ubuntu180403docker/preseed_180403docker.cfg"
+        ],
+        "boot_wait": "15s",
+        "boot_command": [
+            "<enter><wait7>",
+            "<f6><wait5><esc>",
+            "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+            "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+            "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+            "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+            "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+            "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+            "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+            "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+            "<bs><bs><bs>",
+            "/install/vmlinuz<wait>",
+            " auto<wait>",
+            " console-setup/ask_detect=false<wait>",
+            " console-setup/layoutcode=us<wait>",
+            " console-setup/modelcode=pc105<wait>",
+            " debconf/frontend=noninteractive<wait>",
+            " debian-installer=en_US<wait>",
+            " fb=false<wait>",
+            " initrd=/install/initrd.gz<wait>",
+            " kbd-chooser/method=us<wait>",
+            " keyboard-configuration/layout=USA<wait>",
+            " keyboard-configuration/variant=USA<wait>",
+            " locale=en_US<wait>",
+            " noapic<wait>",
+            " file=/media/preseed_180403docker.cfg",
+            " -- <wait>",
+            "<enter><wait>"
+          ]
+    }],
+    "provisioners": [
+        {
+            "type": "file",
+            "source": "common/files/daemon.json",
+            "destination": "/tmp/daemon.json"
+          },
+        {
+        "type": "shell",
+        "scripts": [
+            "ubuntu180403docker/scripts/packer-script-native-docker.sh",
+            "ubuntu180403docker/scripts/packer-ubuntu18-cleanup.sh"
+          ]    }],
+    "post-processors": [
+            {
+              "type": "manifest",
+              "output": "/output/packer-manifest/packer-manifest.json",
+              "strip_path": true,
+              "custom_data": {
+                "vcenter_datacenter": "{{user `vcenter_datacenter`}}",
+                "os_type": "{{user `os_type`}}",
+                "os_family": "{{user `os_family`}}",
+                "os_release": "{{user `os_release`}}",
+                "deployment_flavor": "{{user `deployment_flavor`}}",
+                "deployment_release": "{{user `deployment_release`}}"
+              }
+            }
+          ]
+}
