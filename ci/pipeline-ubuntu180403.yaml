@@ -25,12 +25,11 @@ jobs:
             - name: packer-files
           outputs:
             - name: packer-build-manifest
-              path: /output/packer-manifest
+              path: packer-files/packer/packer-manifest
           run:
             path: /bin/sh
             dir: packer-files/packer
             args:
               - -exc
               - |
-                mkdir -p /output/packer-manifest
                 packer build -force -timestamp-ui -var-file=common/common-vars.json ubuntu-180403-docker.json
