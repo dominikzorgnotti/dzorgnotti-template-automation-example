@@ -84,7 +84,7 @@
     "post-processors": [
             {
               "type": "manifest",
-              "output": "/output/packer-manifest/packer-manifest.json",
+              "output": "packer-manifest/packer-manifest.json",
               "strip_path": true,
               "custom_data": {
                 "vcenter_datacenter": "{{user `vcenter_datacenter`}}",
