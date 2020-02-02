@@ -8,9 +8,39 @@ resources:
       private_key: ((github_private_key))
 
 jobs:
-  - name: build-ubuntu-180403-docker
+  - name: validate-packer-configuration
+    serial: true
     plan:
       - get: packer-files
+      - task: run-packer-validate
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: dzorgnotti/packer-jetbrains-vsphere
+              tag: latest
+              username: ((docker_hub_user))
+              password: ((docker_hub_password))
+          inputs:
+            - name: packer-files
+          outputs:
+            - name: packer-build-manifest
+              path: packer-files/packer/packer-manifest
+          run:
+            path: /bin/sh
+            dir: packer-files/packer
+            args:
+              - -exc
+              - |
+                packer validate -syntax-only -var-file=common/common-vars.json ubuntu-180403-docker.json
+
+  - name: build-ubuntu-180403-docker
+    serial: true
+    plan:
+      - get: packer-files
+        trigger: true
+        passed: [validate-packer-configuration]
       - task: create-image-with-packer
         config:
           platform: linux
@@ -33,3 +63,28 @@ jobs:
               - -exc
               - |
                 packer build -force -timestamp-ui -var-file=common/common-vars.json ubuntu-180403-docker.json
+      - task: add-vm-tags-with-govc
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: dzorgnotti/vmware-govc
+              tag: latest
+              username: ((docker_hub_user))
+              password: ((docker_hub_password))
+          params:
+            GOVC_URL: ((vcenter_host))
+            GOVC_USERNAME: ((vcenter_user))
+            GOVC_PASSWORD: ((vcenter_password))
+            GOVC_INSECURE: true
+            GOVC_DATACENTER: ((vcenter_datacenter))
+          inputs:
+            - name: packer-build-manifest
+            - name: packer-files
+          run:
+            path: /bin/sh
+            args:
+              - -c
+              - |
+                ./packer-files/scripts/govc-tagging.sh
