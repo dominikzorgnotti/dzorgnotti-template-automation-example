@@ -24,9 +24,6 @@ jobs:
               password: ((docker_hub_password))
           inputs:
             - name: packer-files
-          outputs:
-            - name: packer-build-manifest
-              path: packer-files/packer/packer-manifest
           run:
             path: /bin/sh
             dir: packer-files/packer
